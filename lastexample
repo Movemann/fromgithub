@@ -1,0 +1,59 @@
+import org.apache.commons.io.IOUtils;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Base64;
+
+public class GitHubFileDownloader {
+    public static void main(String[] args) {
+        String repoUrl = "https://github.enterprise.com/usuario/repositorio";
+        String username = "tu_usuario";
+        String password = "tu_contraseña";
+
+        try {
+            URL url = new URL(repoUrl + "/contents");
+            String auth = username + ":" + password;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("Authorization", "Basic " + encodedAuth);
+
+            InputStream inputStream = connection.getInputStream();
+            String response = IOUtils.toString(inputStream, "UTF-8");
+
+            String[] files = response.split("\"name\":\"");
+
+            for (String file : files) {
+                if (file.contains(".pem\"") || file.contains(".crt\"") || file.contains(".p12\"")) {
+                    String filename = file.split("\"")[0];
+                    downloadFile(repoUrl + "/contents/" + filename, filename, encodedAuth);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void downloadFile(String fileUrl, String fileName, String auth) {
+        try {
+            URL url = new URL(fileUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("Authorization", "Basic " + auth);
+
+            InputStream inputStream = connection.getInputStream();
+            FileOutputStream outputStream = new FileOutputStream(fileName);
+
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
