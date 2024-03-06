@@ -1,0 +1,32 @@
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import javax.annotation.PostConstruct;
+import java.io.File;
+
+@Configuration
+public class ResourceCreator {
+
+    @Value("${dynamic.folder.name}") // Lee el nombre de la carpeta desde una propiedad definida en application.properties
+    private String folderName;
+
+    @PostConstruct
+    public void createDynamicFolder() {
+        // Obtiene la ruta al directorio "resources" del proyecto
+        String resourcesDirectory = getClass().getClassLoader().getResource("").getPath();
+        
+        // Construye la ruta completa de la carpeta dinámica
+        String dynamicFolderPath = resourcesDirectory + folderName;
+
+        // Crea la carpeta si no existe
+        File dynamicFolder = new File(dynamicFolderPath);
+        if (!dynamicFolder.exists()) {
+            if (dynamicFolder.mkdirs()) {
+                System.out.println("Carpeta dinámica creada con éxito.");
+            } else {
+                System.err.println("Error al crear la carpeta dinámica.");
+            }
+        } else {
+            System.out.println("La carpeta dinámica ya existe.");
+        }
+    }
+}
