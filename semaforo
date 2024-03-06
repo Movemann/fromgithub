@@ -1,0 +1,24 @@
+import java.util.concurrent.Semaphore;
+
+public class CarpetaManager {
+    private static final Semaphore semaphore = new Semaphore(1); // Inicialización con un permiso
+
+    public static void crearCarpeta() {
+        try {
+            // Intenta adquirir el permiso del semáforo
+            semaphore.acquire();
+            // Lógica para crear la carpeta aquí
+            // ...
+            System.out.println("Carpeta creada");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            // Libera el permiso del semáforo
+            semaphore.release();
+        }
+    }
+
+    public static void main(String[] args) {
+        crearCarpeta();
+    }
+}
