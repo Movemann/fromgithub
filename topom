@@ -1,0 +1,21 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/security
+                           http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!-- Configuración de Spring Security -->
+    <security:http auto-config="true">
+        <!-- Configura la seguridad aquí -->
+    </security:http>
+
+    <!-- Configuración del filtro de seguridad -->
+    <bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
+        <security:filter-chain-map path-type="ant">
+            <!-- Configura las rutas protegidas y los filtros aquí -->
+        </security:filter-chain-map>
+    </bean>
+
+</beans>
